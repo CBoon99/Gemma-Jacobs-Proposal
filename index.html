@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Community Security Growth Model | Prestwich & Greater Manchester</title>
+  <meta name="description" content="Interactive civic-safety business case for Prestwich and Greater Manchester: local imagery, deployment simulator, evidence sources, and official contact routes." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIINfQmMPLI3nK2YRFuXVhIuME5V3hUHE3M=" crossorigin=""/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root{--bg:#06090e;--panel:#0e141c;--panel2:#121a26;--line:rgba(255,255,255,.1);--muted:#9aa8b7;--text:#eef4f8;--gold:#d6b36a;--green:#68e0aa;--blue:#7fb4ff;--red:#ff8a8a;--shadow:0 24px 80px rgba(0,0,0,.45);--r:24px;--ease:cubic-bezier(.22,1,.36,1)}
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;background:var(--bg);color:var(--text);line-height:1.5;overflow-x:hidden}
+    body:before{content:"";pointer-events:none;position:fixed;inset:0;z-index:0;background:
+      radial-gradient(900px 500px at 12% -8%,rgba(127,180,255,.22),transparent 55%),
+      radial-gradient(700px 480px at 88% 0%,rgba(214,179,106,.14),transparent 50%),
+      radial-gradient(ellipse at 50% 120%,rgba(104,224,170,.06),transparent 45%);
+      animation:bgdrift 28s var(--ease) infinite alternate}
+    @keyframes bgdrift{0%{filter:hue-rotate(0deg) saturate(1);transform:translate(0,0)}100%{filter:hue-rotate(12deg) saturate(1.08);transform:translate(-1.5%,1%)}}
+    a{color:inherit}
+    .wrap{width:min(1180px,calc(100% - 38px));margin:0 auto;position:relative;z-index:1}
+    .nav{position:sticky;top:0;z-index:50;background:rgba(6,9,14,.78);backdrop-filter:blur(20px);border-bottom:1px solid var(--line)}
+    .navin{display:flex;align-items:center;justify-content:space-between;height:72px;gap:16px;flex-wrap:wrap}
+    .brand{display:flex;gap:12px;align-items:center;font-weight:900;letter-spacing:-.04em}
+    .mark{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,#d6b36a,#7fb4ff);box-shadow:0 0 0 1px rgba(255,255,255,.15) inset;animation:markpulse 5s ease-in-out infinite}
+    @keyframes markpulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.04);opacity:.92}}
+    .navlinks{display:flex;gap:18px;font-size:13px;color:var(--muted);flex-wrap:wrap}
+    .navlinks a{text-decoration:none;transition:color .25s}
+    .navlinks a:hover{color:#fff}
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;padding:13px 18px;border-radius:999px;border:1px solid rgba(255,255,255,.14);background:#fff;color:#061018;text-decoration:none;font-weight:800;box-shadow:var(--shadow);transition:transform .35s var(--ease),box-shadow .35s}
+    .btn:hover{transform:translateY(-2px);box-shadow:0 28px 70px rgba(0,0,0,.5)}
+    .btn.ghost{background:rgba(255,255,255,.04);color:var(--text);box-shadow:none}
+    .btn.ghost:hover{background:rgba(255,255,255,.08)}
+    .hero{padding:88px 0 48px;position:relative;overflow:hidden}
+    .grid{display:grid;grid-template-columns:1.08fr .92fr;gap:34px;align-items:center}
+    .eyebrow{display:inline-flex;gap:8px;align-items:center;border:1px solid var(--line);background:rgba(255,255,255,.04);padding:8px 12px;border-radius:999px;color:var(--muted);font-size:13px;font-weight:700}
+    .dot{width:8px;height:8px;background:var(--green);border-radius:50%;box-shadow:0 0 18px var(--green);animation:blink 2.4s ease-in-out infinite}
+    @keyframes blink{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.55;transform:scale(.85)}}
+    h1{font-size:clamp(38px,6.2vw,76px);line-height:.95;letter-spacing:-.075em;margin:18px 0 18px}
+    h2{font-size:clamp(28px,3.6vw,48px);line-height:1.02;letter-spacing:-.055em;margin:0 0 16px}
+    h3{font-size:20px;letter-spacing:-.03em;margin:0 0 8px}
+    p{color:var(--muted);font-size:16px;margin:0 0 14px}
+    .lead{font-size:19px;max-width:720px}
+    .heroimg{min-height:520px;border-radius:32px;background-color:#121a26;background-image:linear-gradient(120deg,rgba(8,11,15,.25),rgba(8,11,15,.55)),url('https://upload.wikimedia.org/wikipedia/commons/b/b1/Prestwich%2C_St_Mary%27s_Church.jpg');background-size:cover;background-position:center 35%;border:1px solid var(--line);box-shadow:var(--shadow);position:relative;overflow:hidden;animation:herozoom 22s var(--ease) infinite alternate}
+    @keyframes herozoom{0%{background-position:45% 40%;transform:scale(1)}100%{background-position:55% 55%;transform:scale(1.04)}}
+    .heroimg:after{content:"";position:absolute;inset:0;background:linear-gradient(195deg,rgba(6,9,14,.15),rgba(6,9,14,.88) 58%)}
+    .statbar{position:absolute;left:22px;right:22px;bottom:22px;z-index:2;display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+    .stat{background:rgba(6,9,14,.82);border:1px solid var(--line);border-radius:18px;padding:16px;backdrop-filter:blur(10px);animation:statin 1s var(--ease) both}
+    .stat:nth-child(2){animation-delay:.12s}
+    .stat:nth-child(3){animation-delay:.22s}
+    @keyframes statin{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+    .num{font-size:clamp(26px,3.4vw,34px);font-weight:900;letter-spacing:-.06em;color:#fff}
+    .num.gold{color:var(--gold);text-shadow:0 0 40px rgba(214,179,106,.25)}
+    .small{font-size:11px;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);font-weight:800}
+    .section{padding:72px 0}
+    .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+    .card{background:linear-gradient(165deg,rgba(255,255,255,.07),rgba(255,255,255,.025));border:1px solid var(--line);border-radius:var(--r);padding:22px;box-shadow:0 16px 48px rgba(0,0,0,.2);transition:transform .45s var(--ease),border-color .35s,background .35s}
+    .card:hover{transform:translateY(-4px);border-color:rgba(214,179,106,.35)}
+    .card b{color:#fff}
+    .kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:22px}
+    .bigk{font-size:34px;color:var(--green);font-weight:900;letter-spacing:-.06em}
+    .sim{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+    .control{background:var(--panel);border:1px solid var(--line);border-radius:32px;padding:28px;position:sticky;top:88px;align-self:start;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+    .range{width:100%;accent-color:var(--gold);cursor:pointer}
+    .readout{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:18px}
+    .read{background:rgba(255,255,255,.045);border:1px solid var(--line);border-radius:18px;padding:16px;transition:background .3s,border-color .3s}
+    .read:hover{background:rgba(255,255,255,.07);border-color:rgba(127,180,255,.25)}
+    .read strong{display:block;font-size:clamp(22px,2.6vw,27px);letter-spacing:-.05em;color:#fff}
+    .toggle{display:flex;gap:10px;align-items:flex-start;margin-top:12px;color:var(--muted);font-size:14px}
+    .mapbox{height:520px;border-radius:32px;overflow:hidden;border:1px solid var(--line);box-shadow:var(--shadow)}
+    #map{height:100%}
+    .timeline{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+    .step{border-left:3px solid var(--gold);padding:10px 0 10px 18px;background:rgba(255,255,255,.035);border-radius:0 18px 18px 0;transition:transform .4s var(--ease),background .35s}
+    .step:hover{transform:translateX(4px);background:rgba(255,255,255,.055)}
+    .resources{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+    .resource{display:flex;justify-content:space-between;gap:16px;align-items:center;background:rgba(255,255,255,.045);border:1px solid var(--line);border-radius:20px;padding:18px;text-decoration:none;transition:transform .35s var(--ease),border-color .3s}
+    .resource:hover{transform:translateY(-3px);border-color:rgba(214,179,106,.4)}
+    .pill{font-size:11px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:var(--gold)}
+    .imggrid{display:grid;grid-template-columns:repeat(12,1fr);grid-auto-rows:120px;gap:12px;margin-top:22px}
+    .photo{grid-column:span 4;grid-row:span 2;border-radius:22px;background-size:cover;background-position:center;border:1px solid var(--line);position:relative;overflow:hidden;min-height:240px;transition:transform .6s var(--ease),box-shadow .5s}
+    .photo.wide{grid-column:span 8}
+    .photo.tall{grid-row:span 3;min-height:360px}
+    .photo:after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(6,9,14,.72),transparent 50%);transition:opacity .5s}
+    .photo:hover{transform:scale(1.015);box-shadow:0 20px 50px rgba(0,0,0,.35)}
+    .photo:hover:after{opacity:.85}
+    .photo span{position:absolute;left:16px;bottom:14px;z-index:1;font-weight:800;font-size:14px;max-width:90%;text-shadow:0 2px 12px rgba(0,0,0,.6)}
+    .photo .cap{position:absolute;right:12px;top:12px;z-index:1;font-size:10px;font-weight:700;color:rgba(255,255,255,.75);background:rgba(0,0,0,.35);padding:4px 8px;border-radius:8px;backdrop-filter:blur(6px)}
+    .cta{background:linear-gradient(125deg,rgba(214,179,106,.14),rgba(127,180,255,.1));border:1px solid var(--line);border-radius:36px;padding:40px;display:flex;justify-content:space-between;gap:22px;align-items:center;position:relative;overflow:hidden}
+    .cta:before{content:"";position:absolute;inset:-40%;background:radial-gradient(circle at 30% 50%,rgba(255,255,255,.06),transparent 45%);animation:ctaorbs 16s linear infinite}
+    @keyframes ctaorbs{to{transform:rotate(360deg)}}
+    .note{font-size:12px;color:#7d8995;line-height:1.45}
+    .two{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+    .list{padding:0;margin:14px 0 0;list-style:none}
+    .list li{padding:10px 0;border-bottom:1px solid var(--line);color:var(--muted);font-size:15px}
+    .list li:before{content:"→";color:var(--gold);margin-right:10px;font-weight:900}
+    table.civic{width:100%;border-collapse:collapse;font-size:14px;margin-top:12px}
+    table.civic th,table.civic td{padding:12px 14px;border:1px solid var(--line);text-align:left;vertical-align:top}
+    table.civic th{background:rgba(255,255,255,.05);color:#fff;font-weight:800;font-size:12px;letter-spacing:.06em;text-transform:uppercase}
+    table.civic td{color:var(--muted)}
+    table.civic a{color:var(--blue);text-decoration:underline;text-underline-offset:3px}
+    .fade{opacity:0;transform:translateY(22px);transition:opacity .85s var(--ease),transform .85s var(--ease)}
+    .fade.show{opacity:1;transform:none}
+    .section.fade.show .card:nth-child(1){transition-delay:.04s}.section.fade.show .card:nth-child(2){transition-delay:.1s}.section.fade.show .card:nth-child(3){transition-delay:.16s}
+    .foot{margin-top:48px;padding:36px 0 48px;border-top:1px solid var(--line);background:linear-gradient(180deg,transparent,rgba(0,0,0,.35))}
+    .footin{display:flex;flex-wrap:wrap;gap:24px;justify-content:space-between;align-items:center}
+    .foot .name{font-weight:900;font-size:20px;letter-spacing:-.03em}
+    .foot .tel{font-size:clamp(22px,4vw,30px);font-weight:900;color:var(--gold);text-decoration:none;transition:opacity .25s}
+    .foot .tel:hover{opacity:.88}
+    .foot .sub{color:var(--muted);font-size:13px;max-width:520px}
+    @media(max-width:900px){
+      .grid,.sim,.two{grid-template-columns:1fr}
+      .cards,.kpi,.timeline,.resources{grid-template-columns:1fr}
+      .imggrid{grid-template-columns:1fr;grid-auto-rows:auto}
+      .photo,.photo.wide,.photo.tall{grid-column:span 1;grid-row:span 1;min-height:220px}
+      .navlinks{display:none}
+      .heroimg{min-height:400px}
+      .statbar{grid-template-columns:1fr}
+      .cta{display:block}
+      .control{position:relative;top:auto}
+    }
+  </style>
+</head>
+<body>
+  <nav class="nav"><div class="wrap navin"><div class="brand"><div class="mark"></div><div>Community Security<br><span style="color:var(--muted);font-weight:700;letter-spacing:0">Growth model · Prestwich / GM</span></div></div><div class="navlinks"><a href="#gallery">Places</a><a href="#context">Context</a><a href="#evidence">Evidence</a><a href="#mapsec">Map</a><a href="#simulator">Simulator</a><a href="#contacts">Contacts</a><a href="#sources">Sources</a></div><a class="btn ghost" href="#simulator">Run model</a></div></nav>
+
+  <header class="hero"><div class="wrap grid"><div><span class="eyebrow"><span class="dot"></span>Prepared for Gemma Jacobs · Prestwich & Greater Manchester</span><h1>Turn visible community safety into a measurable growth channel.</h1><p class="lead">A single-page business case for your security firm: real Prestwich & Bury photography, evidence-led public context, an interactive deployment-to-revenue model (25% of gross margin), and official routes to councillors, meetings and civic partners — framed professionally, not alarmist.</p><div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:26px"><a class="btn" href="#simulator">Open revenue simulator</a><a class="btn ghost" href="#contacts">Civic contact pack</a></div></div><div class="heroimg"><div class="statbar"><div class="stat"><div class="num gold">500</div><div class="small">Personnel scale (model cap)</div></div><div class="stat"><div class="num" id="heroCommission">£0</div><div class="small">Modelled Gemma 25% / month*</div></div><div class="stat"><div class="num">10</div><div class="small">GM boroughs on map</div></div></div></div></div></header>
+
+  <section id="gallery" class="section fade"><div class="wrap"><h2>Prestwich & Bury: real places, not stock filler.</h2><p>Photography below is from <strong style="color:#fff">Wikimedia Commons</strong> (Geograph / CC licences) so this deck can be shown without rights guesswork. Labels describe how security services typically intersect with each environment.</p><div class="imggrid"><div class="photo wide" style="background-image:url('https://upload.wikimedia.org/wikipedia/commons/9/9f/Prestwich_-_geograph.org.uk_-_3769861.jpg')"><span>Prestwich — residential & parade context</span><span class="cap">CC BY-SA</span></div><div class="photo" style="background-image:url('https://upload.wikimedia.org/wikipedia/commons/0/0a/Prestwich_Cooperative_Society_%28geograph_6473264%29.jpg')"><span>Retail & convenience footfall</span><span class="cap">CC BY-SA</span></div><div class="photo" style="background-image:url('https://upload.wikimedia.org/wikipedia/commons/e/ed/Parkgates%2C_Prestwich_-_geograph.org.uk_-_7871146.jpg')"><span>Local centres & parking</span><span class="cap">CC BY-SA</span></div><div class="photo" style="background-image:url('https://upload.wikimedia.org/wikipedia/commons/a/ab/New_School%2C_Scholes_Lane_-_geograph.org.uk_-_2549278.jpg')"><span>Schools & education sites</span><span class="cap">CC BY-SA</span></div><div class="photo" style="background-image:url('https://upload.wikimedia.org/wikipedia/commons/5/5f/Bury_Town_Hall_-_geograph.org.uk_-_3009068.jpg')"><span>Bury Town Hall — democratic & civic access</span><span class="cap">CC BY-SA</span></div><div class="photo" style="background-image:url('https://upload.wikimedia.org/wikipedia/commons/6/61/Heaton_Park_Metrolink_station%2C_Prestwich_-_geograph.org.uk_-_2932570.jpg')"><span>Metrolink — event nights & commuter peaks</span><span class="cap">CC BY-SA</span></div><div class="photo tall" style="background-image:url('https://upload.wikimedia.org/wikipedia/commons/9/93/Heaton_Park_-_geograph.org.uk_-_62688.jpg')"><span>Heaton Park — major events & crowds</span><span class="cap">CC BY-SA</span></div></div><p class="note" style="margin-top:14px">Hero image: St Mary the Virgin, Prestwich (listed building). Attribution on individual Commons file pages — retain for any public PDF export.</p></div></section>
+
+  <section id="context" class="section fade"><div class="wrap"><div class="two"><div><h2>The opportunity is reassurance, delivered with discipline.</h2><p>Prestwich sits mainly in the <strong style="color:#fff">Metropolitan Borough of Bury</strong> (not Manchester City), bordering Manchester and Salford. That matters for councillors, licensing, community safety partnerships and procurement geography.</p><p>Schools, nurseries, care settings, retail parades, offices, faith and community buildings, parks and transport interchanges all benefit from calm, accredited guarding — especially where antisocial behaviour, retail crime or large events shift risk.</p></div><div class="card"><div class="pill">How to use this page</div><p>Show the simulator first, then evidence, then contacts. Keep every outreach factual, respectful and non-partisan. Verify names, emails and surgery times on the official council pages before you send anything — democracy sites update after elections.</p><p class="note">Nothing here is legal, tax or employment advice. Model figures are illustrative.</p></div></div><div class="kpi"><div class="card"><div class="bigk">Places</div><p>Patrols, static posts, receptions, events, parks, transport hubs.</p></div><div class="card"><div class="bigk">Proof</div><p>Accreditations, insurance, method statements, references, uniforms.</p></div><div class="card"><div class="bigk">Civic</div><p>Township forums, scrutiny, licensing, safer communities routes.</p></div><div class="card"><div class="bigk">Digital</div><p>Local SEO, reviews, sector pages, CRM follow-up after meetings.</p></div></div></div></section>
+
+  <section id="evidence" class="section fade"><div class="wrap"><h2>Evidence-led context (Bury & Greater Manchester).</h2><div class="two" style="margin-top:8px"><div class="card"><h3>Recorded crime — borough lens</h3><p>The Bury public-health snapshot reports <strong style="color:#fff">recorded crime in Bury at about 96 offences per 1,000 people</strong> in the twelve months to Q4 2024, down from about <strong style="color:#fff">106 per 1,000</strong> in the prior annual window — still mid-pack versus similar areas. Use the chart as a conversation starter, then drill into <a href="https://www.police.uk/" target="_blank" rel="noopener" style="color:var(--blue)">Police.uk</a> street-level maps for specific postcodes.</p><p class="note">Greater Manchester Police has had periods of incomplete public dashboards; always cross-check any postcode story with Police.uk and local partnership papers.</p><canvas id="crimeChart" height="220"></canvas></div><div class="card"><h3>Antisemitism & hate crime — careful facts</h3><p>Greater Manchester hosts one of the largest Jewish communities outside London. After October 2023, <strong style="color:#fff">both community-recorded antisemitic incidents (CST)</strong> and <strong style="color:#fff">police-recorded religious hate crime (Home Office / ONS)</strong> showed sharp increases nationally and in several city regions. CST’s annual antisemitic incident reports are the standard community dataset; Home Office bulletins give police-recorded hate crime trends.</p><p>Framing for bosses: professional guarding and community security planning are part of a wider resilience picture alongside statutory agencies — not a replacement for policing, and not a promise of grant funding.</p><ul class="list"><li><a href="https://cst.org.uk/research/cst-publications" target="_blank" rel="noopener" style="color:var(--blue)">CST publications & incident reports</a></li><li><a href="https://www.gov.uk/government/collections/hate-crime-statistics" target="_blank" rel="noopener" style="color:var(--blue)">Home Office hate crime statistics</a></li><li><a href="https://www.gov.uk/guidance/jewish-community-protective-security-grant" target="_blank" rel="noopener" style="color:var(--blue)">Jewish Community Protective Security Grant (official guidance)</a></li></ul></div></div></div></section>
+
+  <section id="mapsec" class="section fade"><div class="wrap"><div class="two" style="align-items:end"><div><h2>Interactive map — Prestwich core + GM expansion.</h2><p>Markers highlight civic entry points and borough-scale expansion. Zoom to Prestwich to narrate Bury New Road, schools, Heaton Park events and retail parades.</p></div><div class="card"><div class="pill">Responsible use</div><p>Use the map to plan conversations, not to spam. Prefer introductions that offer risk assessments, visible reassurance and partnership with existing statutory and voluntary safety networks.</p></div></div><div class="mapbox" style="margin-top:22px"><div id="map"></div></div></div></section>
+
+  <section id="simulator" class="section fade"><div class="wrap"><div class="sim"><div class="control"><div class="pill">Interactive model</div><h2>Deployment → revenue → Gemma 25%.</h2><p>Slide personnel up: modelled bill rate, margin and your <strong style="color:#fff">25% of gross margin</strong> scale together. Toggles add illustrative uplifts for corporate retail and event premiums.</p><label class="small" for="guards">Personnel deployed (model)</label><input id="guards" class="range" type="range" min="1" max="500" value="80" /><div class="num gold" id="guardCount" style="margin-top:6px">80</div><div class="toggle"><input id="corp" type="checkbox" checked> <label for="corp">Corporate / large retail intensity (+35% on modelled daily margin)</label></div><div class="toggle"><input id="premium" type="checkbox"> <label for="premium">Events / rapid-response premium (+20%)</label></div><p class="note" style="margin-top:14px">Assumptions baked in: 8h shifts, 22 working days/month, NLW-style wage baseline £12.71/hr, billed at wage + 50%, commission on margin only. Adjust constants in the script for your real charge rates.</p></div><div><div class="readout"><div class="read"><span class="small">Bill rate / hour</span><strong id="billRate">£0</strong></div><div class="read"><span class="small">Gross margin / hour</span><strong id="marginHour">£0</strong></div><div class="read"><span class="small">Daily gross margin</span><strong id="dailyMargin">£0</strong></div><div class="read"><span class="small">Monthly gross margin</span><strong id="monthlyMargin">£0</strong></div><div class="read"><span class="small">Annual gross margin</span><strong id="annualMargin">£0</strong></div><div class="read"><span class="small">Gemma 25% (monthly)</span><strong id="commission">£0</strong></div></div><div class="card" style="margin-top:14px"><canvas id="revChart" height="210"></canvas></div></div></div></div></section>
+
+  <section class="section fade"><div class="wrap"><h2>Products you can sell as a ladder.</h2><div class="cards"><div class="card"><h3>Mobile reassurance patrols</h3><p>Retail parades, residential clusters, schools and night-time economy touchpoints — lower entry than full static teams.</p></div><div class="card"><h3>Static guarding</h3><p>Reception, gates, warehouses, offices, community buildings where presence is mandated or expected.</p></div><div class="card"><h3>Events & public meetings</h3><p>Heaton Park-scale crowds down to ward forums — documented risk assessments and steward ratios.</p></div><div class="card"><h3>Corporate contracts</h3><p>Property managers, blocks, logistics, healthcare private sites — predictable monthly recurring revenue.</p></div><div class="card"><h3>Risk assessments</h3><p>Short paid audits that convert to implementation and retainers.</p></div><div class="card"><h3>Retained response</h3><p>Priority attendance windows around peaks, releases and local calendar risk.</p></div></div></div></section>
+
+  <section id="growth" class="section fade"><div class="wrap"><h2>2026 growth engine: digital + civic + physical.</h2><div class="timeline"><div class="step"><h3>1. Local SEO</h3><p>Google Business Profile, “security Prestwich / Whitefield / Bury / North Manchester” service pages, reviews, schema.</p></div><div class="step"><h3>2. Authority content</h3><p>Calm explainers: retail loss, school visitor control, event planning, residential reassurance.</p></div><div class="step"><h3>3. Meeting rhythm</h3><p>Diarise Bury calendar + Prestwich Township Forum + ward surgeries via official listings.</p></div><div class="step"><h3>4. CRM discipline</h3><p>Every handshake → logged next action → quote → contract. Commission visibility for leadership.</p></div></div><div class="cards" style="margin-top:16px"><div class="card"><h3>Regeneration signal</h3><p>Longfield Centre and wider Prestwich regeneration will temporarily displace traders but create new anchors — follow <a href="https://yourprestwich.com/" target="_blank" rel="noopener" style="color:var(--blue)">Your Prestwich</a> and <a href="https://prestwichvillageforum.org.uk/" target="_blank" rel="noopener" style="color:var(--blue)">Prestwich Village Neighbourhood Forum</a> for planning updates and community entry points.</p></div><div class="card"><h3>Trust design</h3><p>Accreditations, insurance limits, supervisor ratios, incident reporting, modern uniform photography — all reduce procurement friction.</p></div><div class="card"><h3>QR → audit page</h3><p>Leaflet local parades with a QR to a dedicated Prestwich/Bury landing page and track conversions.</p></div></div></div></section>
+
+  <section id="contacts" class="section fade"><div class="wrap"><h2>Civic & partner directory (verify before mailing).</h2><p>Prestwich is split across several <strong style="color:#fff">Bury Council wards</strong> (commonly St Mary’s, Holyrood, Sedgley and Pilkington Park catch parts of the Prestwich built-up area). Exact representation depends on street — use the postcode tools first.</p><table class="civic"><thead><tr><th>Body</th><th>What to use it for</th><th>Primary route</th></tr></thead><tbody>
+<tr><td><strong style="color:#fff">Bury MBC</strong></td><td>Ward councillors, committees, licensing, planning, community safety.</td><td>Customer hub <strong style="color:#fff">0161 253 5353</strong> · <a href="https://www.bury.gov.uk/" target="_blank" rel="noopener">bury.gov.uk</a> · <a href="https://councildecisions.bury.gov.uk/mgFindMember.aspx" target="_blank" rel="noopener">Find your councillor</a> · <a href="https://councildecisions.bury.gov.uk/mgCalendarMonthView.aspx" target="_blank" rel="noopener">Meeting calendar</a> · <a href="https://councildecisions.bury.gov.uk/mgCommitteeMailingList.aspx?ID=0" target="_blank" rel="noopener">Full councillor mailing list</a></td></tr>
+<tr><td><strong style="color:#fff">Prestwich Township Forum</strong></td><td>Parish-style civic forum — agenda visibility, local priorities.</td><td><a href="https://councildecisions.bury.gov.uk/mgCommitteeDetails.aspx?ID=146" target="_blank" rel="noopener">Committee page</a> · <a href="https://councildecisions.bury.gov.uk/mgCommitteeMailingList.aspx?ID=146" target="_blank" rel="noopener">Published forum contacts</a> (includes named members — cross-check)</td></tr>
+<tr><td><strong style="color:#fff">Manchester City Council</strong></td><td>North Manchester adjacency, city licensing, city-centre events.</td><td>Switchboard <strong style="color:#fff">0161 234 5000</strong> · <a href="https://www.manchester.gov.uk/" target="_blank" rel="noopener">manchester.gov.uk</a> · <a href="https://democracy.manchester.gov.uk/mgFindMember.aspx" target="_blank" rel="noopener">Find your councillor</a></td></tr>
+<tr><td><strong style="color:#fff">GMCA / Deputy Mayor</strong></td><td>Safer communities strategy, PCC partnership context.</td><td><a href="https://www.greatermanchester-ca.gov.uk/" target="_blank" rel="noopener">greatermanchester-ca.gov.uk</a> · <a href="https://www.greatermanchester-ca.gov.uk/what-we-do/safer-and-stronger-communities" target="_blank" rel="noopener">Safer & Stronger Communities</a></td></tr>
+<tr><td><strong style="color:#fff">Greater Manchester Police</strong></td><td>Local neighbourhood teams, reporting, partnership working.</td><td><a href="https://www.gmp.police.uk/" target="_blank" rel="noopener">gmp.police.uk</a> · <a href="https://www.police.uk/" target="_blank" rel="noopener">Police.uk local crime &amp; teams</a></td></tr>
+<tr><td><strong style="color:#fff">GOV.UK</strong></td><td>Postcode → all tiers of councillor.</td><td><a href="https://www.gov.uk/find-your-local-councillors" target="_blank" rel="noopener">Find your local councillors</a></td></tr>
+</tbody></table><p class="note" style="margin-top:14px">Retail &amp; civics: <a href="https://yourprestwich.com/" target="_blank" rel="noopener">Your Prestwich</a> (regeneration comms), <a href="https://prestwichvillageforum.org.uk/" target="_blank" rel="noopener">Prestwich Village Neighbourhood Forum</a>. Add synagogues, sports clubs and BIDs from your own CRM once permissioned — do not scrape personal mobiles from the open web.</p></div></section>
+
+  <section id="sources" class="section fade"><div class="wrap"><h2>Further official datasets & tools.</h2><div class="resources"><a class="resource" target="_blank" rel="noopener" href="https://councildecisions.bury.gov.uk/mgMemberIndex.aspx?bcr=1"><span><b>Bury councillor index</b><br><small>Directory & political grouping.</small></span><span>↗</span></a><a class="resource" target="_blank" rel="noopener" href="https://www.theburydirectory.co.uk/jsna/wider-determinants/crime"><span><b>Bury Directory — crime JSNA</b><br><small>Wider determinants & population-rate context.</small></span><span>↗</span></a><a class="resource" target="_blank" rel="noopener" href="https://www.ons.gov.uk/peoplepopulationandcommunity/crimeandjustice/datasets/policeforceareadatatables"><span><b>ONS police-recorded crime</b><br><small>Force-area tables for charts in tenders.</small></span><span>↗</span></a><a class="resource" target="_blank" rel="noopener" href="https://www.gmp.police.uk/police-forces/greater-manchester-police/areas/greater-manchester-force-content/sd/stats-and-data/"><span><b>GMP statistics hub</b><br><small>Transparency & data releases.</small></span><span>↗</span></a><a class="resource" target="_blank" rel="noopener" href="https://www.gov.uk/guidance/jewish-community-protective-security-grant"><span><b>Protective Security Grant</b><br><small>Home Office guidance; administered via CST for eligible bodies.</small></span><span>↗</span></a><a class="resource" target="_blank" rel="noopener" href="https://democracy.manchester.gov.uk/mgMemberIndex.aspx?bcr=1"><span><b>Manchester councillors</b><br><small>City council democracy site.</small></span><span>↗</span></a></div></div></section>
+
+  <section class="section fade"><div class="wrap"><div class="cta"><div style="position:relative;z-index:1"><h2>Position Gemma as the growth lead, not occasional BD.</h2><p>Pipeline = evidence + visibility + civic calendar + ruthless CRM. This page is the leave-behind that proves the strategy is already designed.</p></div><a class="btn" style="position:relative;z-index:1" href="#simulator">Back to simulator</a></div></div></section>
+
+  <footer class="foot"><div class="wrap footin"><div><div class="name">Gemma Jacobs</div><div class="sub">Community security growth · Prepared as a single-file HTML deck — open in any browser. Phone is for your bosses to act: call, brief, book the first Prestwich/Bury corridor sweep.</div></div><a class="tel" href="tel:+447968770210">07968 770210</a></div></footer>
+
+<script>
+const fmt=n=>new Intl.NumberFormat('en-GB',{style:'currency',currency:'GBP',maximumFractionDigits:0}).format(n);
+const fmt2=n=>new Intl.NumberFormat('en-GB',{style:'currency',currency:'GBP',minimumFractionDigits:2,maximumFractionDigits:2}).format(n);
+const wage=12.71, bill=wage*1.5, margin=bill-wage, hours=8, days=22, commissionRate=.25;
+const el=id=>document.getElementById(id);
+let revChart;
+function calc(){
+  const guards=+el('guards').value;
+  let mult=1;
+  if(el('corp').checked) mult+=.35;
+  if(el('premium').checked) mult+=.20;
+  const daily=guards*margin*hours*mult;
+  const monthly=daily*days;
+  const annual=monthly*12;
+  const comm=monthly*commissionRate;
+  el('guardCount').textContent=guards;
+  el('billRate').textContent=fmt2(bill);
+  el('marginHour').textContent=fmt2(margin);
+  el('dailyMargin').textContent=fmt(daily);
+  el('monthlyMargin').textContent=fmt(monthly);
+  el('annualMargin').textContent=fmt(annual);
+  el('commission').textContent=fmt(comm);
+  el('heroCommission').textContent=fmt(comm);
+  if(revChart){
+    revChart.data.datasets[0].data=[daily,monthly,annual,comm];
+    revChart.update({duration:450,easing:'easeOutQuart'});
+  }
+}
+window.addEventListener('DOMContentLoaded',()=>{
+  const map=L.map('map',{scrollWheelZoom:false}).setView([53.51,-2.28],10);
+  map.once('click',()=>{map.scrollWheelZoom.enable();});
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; OpenStreetMap contributors'}).addTo(map);
+  const pts=[
+    ["St Mary's, Prestwich",[53.5297,-2.2865],'Landmark core — parish church & village frame.'],
+    ['Bury Town Hall',[53.5933,-2.2980],'Bury MBC HQ — committees, democratic services, civic access.'],
+    ['Heaton Park',[53.5315,-2.2543],'Major events — crowd management & traffic pressure.'],
+    ['Prestwich / Bury corridor',[53.533,-2.286],'Primary opportunity band: Bury New Road, parades, schools, Metrolink.'],
+    ['Manchester City Council',[53.4808,-2.2426],'Adjacent city procurement & events.'],
+    ['GMCA',[53.477,-2.245],'Combined authority safer communities framing.'],
+    ['Salford',[53.4875,-2.2901],'Corporate & retail expansion.'],
+    ['Bolton',[53.5769,-2.4282],'Borough-scale route.'],
+    ['Oldham',[53.5409,-2.1114],'Borough-scale route.'],
+    ['Rochdale',[53.6097,-2.1561],'Borough-scale route.'],
+    ['Stockport',[53.4084,-2.1493],'Borough-scale route.'],
+    ['Trafford',[53.4215,-2.3517],'Corporate & retail.'],
+    ['Wigan',[53.545,-2.6325],'Borough-scale route.']
+  ];
+  pts.forEach(p=>L.marker(p[1]).addTo(map).bindPopup('<b>'+p[0]+'</b><br>'+p[2]));
+  new Chart(el('crimeChart'),{
+    type:'bar',
+    data:{
+      labels:['Bury prior window (~106 / 1k)','Bury latest window (~96 / 1k)'],
+      datasets:[{
+        label:'Recorded crime rate (approx. offences per 1,000 population)',
+        data:[106,96],
+        backgroundColor:['rgba(127,180,255,.35)','rgba(104,224,170,.4)'],
+        borderColor:['rgba(127,180,255,.9)','rgba(104,224,170,.95)'],
+        borderWidth:2
+      }]
+    },
+    options:{
+      plugins:{
+        legend:{labels:{color:'#eef4f8'}},
+        tooltip:{
+          callbacks:{
+            afterLabel:()=>'See Bury Directory JSNA crime page + ONS/GMP for tender-grade tables.'
+          }
+        }
+      },
+      scales:{
+        x:{ticks:{color:'#9aa8b7'},grid:{color:'rgba(255,255,255,.06)'}},
+        y:{beginAtZero:false,min:80,ticks:{color:'#9aa8b7'},grid:{color:'rgba(255,255,255,.08)'}}
+      }
+    }
+  });
+  revChart=new Chart(el('revChart'),{
+    type:'bar',
+    data:{
+      labels:['Daily margin','Monthly margin','Annual margin','Gemma 25% / mo'],
+      datasets:[{label:'Model £',data:[0,0,0,0],backgroundColor:['rgba(214,179,106,.45)','rgba(127,180,255,.4)','rgba(104,224,170,.35)','rgba(255,138,138,.45)'],borderWidth:1,borderColor:'rgba(255,255,255,.12)'}]
+    },
+    options:{
+      plugins:{legend:{display:false}},
+      scales:{
+        x:{ticks:{color:'#9aa8b7'},grid:{display:false}},
+        y:{ticks:{color:'#9aa8b7',callback:v=>'£'+(v>=1e6?(v/1e6).toFixed(1)+'m':v>=1000?(v/1000).toFixed(0)+'k':v)},grid:{color:'rgba(255,255,255,.08)'}}
+      }
+    }
+  });
+  ['guards','corp','premium'].forEach(id=>{
+    const n=el(id);
+    n.addEventListener('input',calc);
+    n.addEventListener('change',calc);
+  });
+  calc();
+  const obs=new IntersectionObserver(es=>{
+    es.forEach(e=>{
+      if(e.isIntersecting){
+        e.target.classList.add('show');
+        obs.unobserve(e.target);
+      }
+    });
+  },{threshold:.12});
+  document.querySelectorAll('.fade,.card,.photo,.cta').forEach(x=>{
+    if(!x.classList.contains('fade')) x.classList.add('fade');
+    obs.observe(x);
+  });
+});
+</script>
+</body>
+</html>
